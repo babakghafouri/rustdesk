@@ -18,12 +18,13 @@ jobs:
         toolchain: stable
         override: true
 
-    - name: Install vcpkg
+    - name: Install vcpkg and opus
       shell: powershell
       run: |
         Invoke-WebRequest -Uri https://github.com/microsoft/vcpkg/archive/refs/heads/master.zip -OutFile vcpkg.zip
         Expand-Archive vcpkg.zip -DestinationPath .
         .\vcpkg-master\bootstrap-vcpkg.bat
+        .\vcpkg-master\vcpkg.exe install opus:x64-windows-static
       working-directory: ${{ github.workspace }}
 
     - name: Set VCPKG_ROOT environment variable
@@ -46,3 +47,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: rustdesk-windows-client
+        path: target/release/rustdesk.exe
