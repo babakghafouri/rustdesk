@@ -2,7 +2,7 @@ name: Build RustDesk Windows Client
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
