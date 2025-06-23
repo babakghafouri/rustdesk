@@ -22,17 +22,15 @@ jobs:
       shell: bash
       run: |
         CONFIG="libs/hbb_common/src/config.rs"
-        # تنظیم آدرس سرور rendezvous و relay
         sed -i 's#\".*rustdesk\\.com:21115\"#\"185.255.208.35:21115\"#g' $CONFIG
         sed -i 's#\".*rustdesk\\.com:21117\"#\"185.255.208.35:21117\"#g' $CONFIG
-        # جایگزینی inline کلید عمومی
         sed -i 's#const DEFAULT_PUBLIC_KEY:.*#const DEFAULT_PUBLIC_KEY: &str = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOP6xsREaPjWKFLVrlH9rlDCEp5Hl+I5AxWFYsgR+0lA";#g' $CONFIG
 
     - name: Build client
-      run: cargo build --release --manifest-path=rustdesk/Cargo.toml
+      run: cargo build --release --manifest-path=./Cargo.toml
 
     - name: Upload .exe artifact
       uses: actions/upload-artifact@v4
       with:
         name: rustdesk-windows-client
-        path: rustdesk/target/release/rustdesk.exe
+        path: target/release/rustdesk.exe
