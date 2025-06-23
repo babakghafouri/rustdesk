@@ -18,13 +18,13 @@ jobs:
         toolchain: stable
         override: true
 
-    - name: Install vcpkg and opus
+    - name: Install vcpkg and dependencies
       shell: powershell
       run: |
         Invoke-WebRequest -Uri https://github.com/microsoft/vcpkg/archive/refs/heads/master.zip -OutFile vcpkg.zip
         Expand-Archive vcpkg.zip -DestinationPath .
         .\vcpkg-master\bootstrap-vcpkg.bat
-        .\vcpkg-master\vcpkg.exe install opus:x64-windows-static --classic
+        .\vcpkg-master\vcpkg.exe install opus:x64-windows-static libyuv:x64-windows-static libvpx:x64-windows-static --classic
       working-directory: ${{ github.workspace }}
 
     - name: Set VCPKG_ROOT environment variable
