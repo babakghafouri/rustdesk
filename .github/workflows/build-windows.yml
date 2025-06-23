@@ -2,8 +2,7 @@ name: Build RustDesk Windows Client
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   build:
@@ -19,9 +18,21 @@ jobs:
         toolchain: stable
         override: true
 
-    - name: Replace server config
+    - name: Replace default config
       shell: bash
       run: |
-        CONFIG_FILE="rustdesk/src/common/config.rs"
-        sed -i 's/public\\.rustdesk\\.com:21115/185.255.208.35:21115/g' $CONFIG_FILE
-        sed -i 's/public\\.rustdesk\\.com:21116/18
+        CONFIG="libs/hbb_common/src/config.rs"
+        # تنظیم آدرس سرور rendezvous و relay
+        sed -i 's#\".*rustdesk\\.com:21115\"#\"185.255.208.35:21115\"#g' $CONFIG
+        sed -i 's#\".*rustdesk\\.com:21117\"#\"185.255.208.35:21117\"#g' $CONFIG
+        # جایگزینی inline کلید عمومی
+        sed -i 's#const DEFAULT_PUBLIC_KEY:.*#const DEFAULT_PUBLIC_KEY: &str = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOP6xsREaPjWKFLVrlH9rlDCEp5Hl+I5AxWFYsgR+0lA";#g' $CONFIG
+
+    - name: Build client
+      run: cargo build --release --manifest-path=rustdesk/Cargo.toml
+
+    - name: Upload .exe artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: rustdesk-windows-client
+        path: rustdesk/target/release/rustdesk.exe
