@@ -28,4 +28,26 @@ jobs:
       working-directory: ${{ github.workspace }}
 
     - name: Set VCPKG_ROOT environment variable
-      run: echo "VCPKG_ROOT=${{ github.workspace }}\vcpkg-master"_
+      run: echo "VCPKG_ROOT=${{ github.workspace }}\vcpkg-master" >> $GITHUB_ENV
+
+    - name: Replace default config
+      shell: bash
+      run: |
+        CONFIG="libs/hbb_common/src/config.rs"
+        sed -i 's#\".*rustdesk\\.com:21115\"#\"185.255.208.35:21115\"#g' $CONFIG
+        sed -i 's#\".*rustdesk\\.com:21117\"#\"185.255.208.35:21117\"#g' $CONFIG
+        sed -i 's#const DEFAULT_PUBLIC_KEY:.*#const DEFAULT_PUBLIC_KEY: &str = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOP6xsREaPjWKFLVrlH9rlDCEp5Hl+I5AxWFYsgR+0lA";#g' $CONFIG
+
+    - name: Build client
+      run: cargo build --release --manifest-path=./Cargo.toml
+      env:
+        VCPKG_ROOT: ${{ github.workspace }}\vcpkg-master
+
+    - name: List build output
+      run: dir target\release
+
+    - name: Upload .exe artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: rustdesk-windows-client
+        path: target/release/rustdesk.exe
